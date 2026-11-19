@@ -1,0 +1,14 @@
+{
+  "name": "classbridge",
+  "private": true,
+  "version": "0.9.0",
+  "workspaces": [
+    "apps/web",
+    "apps/parent-app",
+    "apps/teacher-app",
+    "packages/ui"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present"
+  }
+}
