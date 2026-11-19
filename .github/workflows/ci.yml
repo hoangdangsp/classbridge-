@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHPUnit
+        working-directory: apps/api
+        run: |
+          composer install --no-interaction
+          php artisan test
+
+  contract-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Contract suite (v1 vs v2)
+        working-directory: apps/api
+        run: |
+          composer install --no-interaction
+          php artisan test --testsuite=Contract
+
+  web-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Jest
+        working-directory: apps/web
+        run: |
+          npm ci
+          npm test
+
+  mobile-e2e:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detox (teacher app)
+        working-directory: apps/teacher-app
+        run: |
+          npm ci
+          npx detox test --configuration ios.sim.release
