@@ -22,6 +22,17 @@ export function pendingCount() {
   return queue.length;
 }
 
+// Test hook (e2e only): resolves once the queue has fully drained.
+export function whenDrained(): Promise<void> {
+  return new Promise((resolve) => {
+    const tick = () => {
+      if (queue.length === 0 && !flushing) resolve();
+      else setTimeout(tick, 100);
+    };
+    tick();
+  });
+}
+
 async function flush(send: (e: SyncEntry) => Promise<void>) {
   if (flushing) return;
   flushing = true;
