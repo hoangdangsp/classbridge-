@@ -1,8 +1,7 @@
 // E2E: offline attendance marking, then sync on reconnect.
-// KNOWN FLAKE: the reconnect test below waits on a hard-coded sleep.
-// On slow CI runners the sync queue has not drained after 3s, so the
-// server assertion fails roughly 1 run in 4. This pattern accounts for
-// most of the 74 Detox flakes currently in the teacher-app suite.
+// FIX (this PR): the reconnect test no longer waits on a hard-coded
+// sleep. It polls the sync queue's test hook until the queue drains,
+// with a hard timeout, so slow CI runners stop flaking the assertion.
 import { device, element, by, expect } from 'detox';
 
 describe('attendance sync', () => {
@@ -24,9 +23,10 @@ describe('attendance sync', () => {
     await expect(element(by.id('pending-sync-badge'))).toBeVisible();
 
     await device.setURLBlacklist([]);
-    // FLAKE SOURCE: fixed sleep instead of waiting for the queue to drain.
-    await new Promise((r) => setTimeout(r, 3000));
+    // Deterministic wait: poll until the queue reports drained.
+    await waitFor(element(by.id('sync-complete-toast')))
+      .toBeVisible()
+      .withTimeout(15000);
     await expect(element(by.id('pending-sync-badge'))).not.toBeVisible();
-    await expect(element(by.id('sync-complete-toast'))).toBeVisible();
   });
 });
