@@ -1,0 +1,7 @@
+{
+  "name": "@classbridge/ui",
+  "private": true,
+  "version": "0.9.0",
+  "main": "src/index.tsx",
+  "description": "Shared component library for ClassBridge web and mobile apps."
+}
